@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>запись</title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="banner">
+        <h1>★ запись на рапорт ★</h1>
+      </div>
+
+      <div class="panel">
+        <h2 id="title">загрузка...</h2>
+        <p class="muted" id="until"></p>
+
+        <form id="form">
+          <div class="row">
+            <label for="fio">фио</label>
+            <input id="fio" name="fio" required maxlength="120" autocomplete="name" />
+          </div>
+          <div class="row">
+            <label for="group">группа</label>
+            <input id="group" name="group" required maxlength="40" />
+          </div>
+          <div class="row">
+            <label for="phone">номер телефона</label>
+            <input
+              id="phone"
+              name="phone"
+              required
+              maxlength="30"
+              inputmode="tel"
+              autocomplete="tel"
+            />
+          </div>
+          <div class="top" style="margin-top: 12px">
+            <button class="btn green" type="submit">зарегистрироваться</button>
+            <a class="btn gray" href="/">назад</a>
+          </div>
+        </form>
+        <div id="msg"></div>
+      </div>
+    </div>
+    <script src="/app.js"></script>
+    <script>
+      loadRegister();
+    </script>
+  </body>
+</html>
