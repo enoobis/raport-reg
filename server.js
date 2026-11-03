@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const { DatabaseSync } = require("node:sqlite");
+const Database = require("better-sqlite3");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,9 +11,9 @@ const ADMIN_PASS = process.env.ADMIN_PASS || "admin";
 
 if (!fs.existsSync(DATA)) fs.mkdirSync(DATA);
 
-const db = new DatabaseSync(DB_PATH);
+const db = new Database(DB_PATH);
+db.pragma("journal_mode = WAL");
 db.exec(`
-  pragma journal_mode = wal;
   create table if not exists events (
     id text primary key,
     title text not null,
@@ -125,9 +125,7 @@ app.post("/api/register", (req, res) => {
 
   const name = normName(fio);
   const exists = db
-    .prepare(
-      `select id from regs where event_id = ? and fio_norm = ?`
-    )
+    .prepare(`select id from regs where event_id = ? and fio_norm = ?`)
     .get(eventId, name);
   if (exists) {
     return res.status(409).json({ error: "это имя уже зарегистрировано" });
