@@ -1,12 +1,18 @@
 const express = require("express");
 const fs = require("fs");
+const http = require("http");
+const https = require("https");
 const path = require("path");
 const { DatabaseSync } = require("node:sqlite");
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = Number(process.env.PORT || 3000);
+const HTTPS_PORT = Number(process.env.HTTPS_PORT || 443);
 const DATA = path.join(__dirname, "data");
 const DB_PATH = path.join(DATA, "raports.db");
+const SSL_DIR = path.join(DATA, "ssl");
+const SSL_KEY = process.env.SSL_KEY || path.join(SSL_DIR, "key.pem");
+const SSL_CERT = process.env.SSL_CERT || path.join(SSL_DIR, "cert.pem");
 const ADMIN_PASS = process.env.ADMIN_PASS || "admin";
 
 if (!fs.existsSync(DATA)) fs.mkdirSync(DATA);
@@ -394,6 +400,34 @@ app.get("/api/panel/export/:eventId", (req, res) => {
   res.send(lines.join("\n") || "//пусто//");
 });
 
-app.listen(PORT, () => {
-  console.log("raports: http://localhost:" + PORT);
-});
+function hasSsl() {
+  return fs.existsSync(SSL_KEY) && fs.existsSync(SSL_CERT);
+}
+
+if (hasSsl()) {
+  const ssl = {
+    key: fs.readFileSync(SSL_KEY),
+    cert: fs.readFileSync(SSL_CERT),
+  };
+
+  https.createServer(ssl, app).listen(HTTPS_PORT, () => {
+    console.log("raports https: https://0.0.0.0:" + HTTPS_PORT);
+  });
+
+  // http -> https
+  http
+    .createServer((req, res) => {
+      const host = (req.headers.host || "localhost").split(":")[0];
+      res.writeHead(301, {
+        Location: "https://" + host + (HTTPS_PORT === 443 ? "" : ":" + HTTPS_PORT) + req.url,
+      });
+      res.end();
+    })
+    .listen(PORT, () => {
+      console.log("raports http redirect: http://0.0.0.0:" + PORT);
+    });
+} else {
+  http.createServer(app).listen(PORT, () => {
+    console.log("raports: http://0.0.0.0:" + PORT);
+  });
+}

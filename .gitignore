@@ -3,6 +3,8 @@ data/*.db
 data/*.db-shm
 data/*.db-wal
 data/*.json
+data/ssl/
 .DS_Store
 *.log
 .env
+
