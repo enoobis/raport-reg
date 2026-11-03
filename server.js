@@ -278,34 +278,37 @@ app.post("/api/panel/events/:id/archive", (req, res) => {
 
 app.post("/api/panel/events/:id/unarchive", (req, res) => {
   if (!checkAdmin(req, res)) return;
-  const e = mapEvent(
-    db.prepare(`select * from events where id = ?`).get(req.params.id)
-  );
-  if (!e) return res.status(404).json({ error: "не найдено" });
+  try {
+    const e = mapEvent(
+      db.prepare(`select * from events where id = ?`).get(req.params.id)
+    );
+    if (!e) return res.status(404).json({ error: "не найдено" });
 
-  let endsAt = e.endsAt;
-  if (new Date(endsAt).getTime() < Date.now()) {
-    const next = requiredText(req.body.endsAt);
-    if (!next) {
-      return res
-        .status(400)
-        .json({ error: "укажи новую дату конца регистрации" });
+    let endsAt = e.endsAt;
+    const fromBody = requiredText(req.body && req.body.endsAt);
+    if (fromBody) {
+      const parsed = parseEndsAt(fromBody);
+      if (!parsed) return res.status(400).json({ error: "некорректная дата" });
+      endsAt = parsed;
     }
-    const parsed = parseEndsAt(next);
-    if (!parsed) return res.status(400).json({ error: "некорректная дата" });
-    if (new Date(parsed).getTime() < Date.now()) {
-      return res.status(400).json({ error: "дата должна быть в будущем" });
+
+    // если дата уже прошла — иначе archiveExpired сразу вернёт в архив
+    if (new Date(endsAt).getTime() <= Date.now()) {
+      endsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     }
-    endsAt = parsed;
+
+    db.prepare(
+      `update events set archived = 0, ends_at = ? where id = ?`
+    ).run(endsAt, req.params.id);
+
+    res.json(
+      mapEvent(
+        db.prepare(`select * from events where id = ?`).get(req.params.id)
+      )
+    );
+  } catch (err) {
+    res.status(500).json({ error: String(err.message || "ошибка") });
   }
-
-  db.prepare(
-    `update events set archived = 0, ends_at = ? where id = ?`
-  ).run(endsAt, req.params.id);
-
-  res.json(
-    mapEvent(db.prepare(`select * from events where id = ?`).get(req.params.id))
-  );
 });
 
 app.get("/api/panel/regs", (req, res) => {

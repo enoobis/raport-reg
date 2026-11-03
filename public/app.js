@@ -256,24 +256,16 @@ function loadAdmin() {
 
     box.querySelectorAll("[data-unarch]").forEach((b) => {
       b.onclick = async () => {
-        const e = eventsCache.find((x) => x.id === b.dataset.unarch);
-        if (!e) return;
-        let endsAt = e.endsAt;
-        if (new Date(endsAt).getTime() < Date.now()) {
-          startEdit(e);
-          show(
-            qs("#createMsg"),
-            "поставь новую дату и нажми сохранить",
-            "info"
-          );
-          return;
+        try {
+          await api("/api/panel/events/" + b.dataset.unarch + "/unarchive", {
+            method: "POST",
+            headers: headers(),
+            body: JSON.stringify({}),
+          });
+          await refresh();
+        } catch (err) {
+          alert(err.message);
         }
-        await api("/api/panel/events/" + e.id + "/unarchive", {
-          method: "POST",
-          headers: headers(),
-          body: JSON.stringify({ endsAt }),
-        });
-        await refresh();
       };
     });
   }
