@@ -54,10 +54,9 @@ async function api(url, opts) {
     data = {};
   }
   if (!res.ok) {
-    throw new Error(
-      data.error ||
-        "ошибка " + res.status + (text ? ": " + text.slice(0, 120) : "")
-    );
+    const pre = text && text.match(/<pre>([\s\S]*?)<\/pre>/i);
+    const detail = data.error || (pre ? pre[1].trim() : text.slice(0, 160));
+    throw new Error(detail || "ошибка " + res.status);
   }
   return data;
 }
@@ -257,33 +256,26 @@ function loadAdmin() {
 
     box.querySelectorAll("[data-arch]").forEach((b) => {
       b.onclick = async () => {
-        await api("/api/panel/events/" + b.dataset.arch + "/archive", {
-          method: "POST",
-          headers: headers(),
-        });
-        await refresh();
+        try {
+          await api("/api/panel/archive-event", {
+            method: "POST",
+            headers: headers(),
+            body: JSON.stringify({ id: b.dataset.arch }),
+          });
+          await refresh();
+        } catch (err) {
+          alert(err.message);
+        }
       };
     });
 
     box.querySelectorAll("[data-unarch]").forEach((b) => {
       b.onclick = async () => {
         try {
-          const e = eventsCache.find((x) => x.id === b.dataset.unarch);
-          if (!e) throw new Error("мероприятие не найдено");
-          let endsAt = e.endsAt;
-          if (new Date(endsAt).getTime() <= Date.now()) {
-            endsAt = new Date(
-              Date.now() + 7 * 24 * 60 * 60 * 1000
-            ).toISOString();
-          }
-          await api("/api/panel/events/" + e.id + "/update", {
+          await api("/api/panel/restore-event", {
             method: "POST",
             headers: headers(),
-            body: JSON.stringify({
-              title: e.title,
-              endsAt: endsAt,
-              archived: false,
-            }),
+            body: JSON.stringify({ id: b.dataset.unarch }),
           });
           await refresh();
         } catch (err) {
@@ -359,14 +351,16 @@ function loadAdmin() {
     }
     try {
       if (editId) {
-        await api(
-          "/api/panel/events/" + encodeURIComponent(editId) + "/update",
-          {
-            method: "POST",
-            headers: headers(),
-            body: JSON.stringify({ title, endsAt: ends, archived: false }),
-          }
-        );
+        await api("/api/panel/update-event", {
+          method: "POST",
+          headers: headers(),
+          body: JSON.stringify({
+            id: editId,
+            title,
+            endsAt: ends,
+            archived: false,
+          }),
+        });
         show(qs("#createMsg"), "сохранено", "ok");
         resetForm();
       } else {

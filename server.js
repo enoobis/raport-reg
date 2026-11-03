@@ -229,12 +229,13 @@ app.post("/api/panel/events", (req, res) => {
   res.json(event);
 });
 
-app.post("/api/panel/events/:id/update", (req, res) => {
+function updateEventHandler(req, res) {
   if (!checkAdmin(req, res)) return;
   try {
-    const e = mapEvent(
-      db.prepare(`select * from events where id = ?`).get(req.params.id)
-    );
+    const id = requiredText(req.params.id || req.body.id);
+    if (!id) return res.status(400).json({ error: "нет id" });
+
+    const e = mapEvent(db.prepare(`select * from events where id = ?`).get(id));
     if (!e) return res.status(404).json({ error: "не найдено" });
 
     const title = requiredText(req.body.title);
@@ -251,69 +252,69 @@ app.post("/api/panel/events/:id/update", (req, res) => {
     else if (req.body.archived === false || req.body.archived === 0) archived = 0;
     else archived = new Date(endsIso).getTime() < Date.now() ? 1 : 0;
 
-    // открываем из архива — дата в будущем, иначе сразу снова закроется
     if (archived === 0 && new Date(endsIso).getTime() <= Date.now()) {
       endsIso = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
     }
 
     db.prepare(
       `update events set title = ?, ends_at = ?, archived = ? where id = ?`
-    ).run(title, endsIso, archived, req.params.id);
+    ).run(title, endsIso, archived, id);
 
-    res.json(
-      mapEvent(
-        db.prepare(`select * from events where id = ?`).get(req.params.id)
-      )
-    );
+    res.json(mapEvent(db.prepare(`select * from events where id = ?`).get(id)));
   } catch (err) {
     res.status(500).json({ error: String(err.message || "ошибка сохранения") });
   }
-});
+}
 
-app.post("/api/panel/events/:id/archive", (req, res) => {
-  if (!checkAdmin(req, res)) return;
-  const e = mapEvent(
-    db.prepare(`select * from events where id = ?`).get(req.params.id)
-  );
-  if (!e) return res.status(404).json({ error: "не найдено" });
-  db.prepare(`update events set archived = 1 where id = ?`).run(req.params.id);
-  e.archived = true;
-  res.json(e);
-});
+function setArchivedHandler(archived) {
+  return (req, res) => {
+    if (!checkAdmin(req, res)) return;
+    try {
+      const id = requiredText(req.params.id || req.body.id);
+      if (!id) return res.status(400).json({ error: "нет id" });
 
-app.post("/api/panel/events/:id/unarchive", (req, res) => {
-  if (!checkAdmin(req, res)) return;
-  try {
-    const e = mapEvent(
-      db.prepare(`select * from events where id = ?`).get(req.params.id)
-    );
-    if (!e) return res.status(404).json({ error: "не найдено" });
+      const e = mapEvent(
+        db.prepare(`select * from events where id = ?`).get(id)
+      );
+      if (!e) return res.status(404).json({ error: "не найдено" });
 
-    let endsAt = e.endsAt;
-    const fromBody = requiredText(req.body && req.body.endsAt);
-    if (fromBody) {
-      const parsed = parseEndsAt(fromBody);
-      if (!parsed) return res.status(400).json({ error: "некорректная дата" });
-      endsAt = parsed;
+      let endsAt = e.endsAt;
+      if (archived === 0) {
+        const fromBody = requiredText(req.body && req.body.endsAt);
+        if (fromBody) {
+          const parsed = parseEndsAt(fromBody);
+          if (!parsed) {
+            return res.status(400).json({ error: "некорректная дата" });
+          }
+          endsAt = parsed;
+        }
+        if (new Date(endsAt).getTime() <= Date.now()) {
+          endsAt = new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+          ).toISOString();
+        }
+      }
+
+      db.prepare(
+        `update events set archived = ?, ends_at = ? where id = ?`
+      ).run(archived, endsAt, id);
+
+      res.json(mapEvent(db.prepare(`select * from events where id = ?`).get(id)));
+    } catch (err) {
+      res.status(500).json({ error: String(err.message || "ошибка") });
     }
+  };
+}
 
-    // если дата уже прошла — иначе archiveExpired сразу вернёт в архив
-    if (new Date(endsAt).getTime() <= Date.now()) {
-      endsAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-    }
+app.post("/api/panel/events/:id/update", updateEventHandler);
+app.post("/api/panel/update-event", updateEventHandler);
+app.post("/api/panel/events/:id/archive", setArchivedHandler(1));
+app.post("/api/panel/archive-event", setArchivedHandler(1));
+app.post("/api/panel/events/:id/unarchive", setArchivedHandler(0));
+app.post("/api/panel/restore-event", setArchivedHandler(0));
 
-    db.prepare(
-      `update events set archived = 0, ends_at = ? where id = ?`
-    ).run(endsAt, req.params.id);
-
-    res.json(
-      mapEvent(
-        db.prepare(`select * from events where id = ?`).get(req.params.id)
-      )
-    );
-  } catch (err) {
-    res.status(500).json({ error: String(err.message || "ошибка") });
-  }
+app.get("/api/panel/ping", (req, res) => {
+  res.json({ ok: true, v: 2 });
 });
 
 app.get("/api/panel/regs", (req, res) => {
