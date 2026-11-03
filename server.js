@@ -1,7 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const Database = require("better-sqlite3");
+const { DatabaseSync } = require("node:sqlite");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -11,9 +11,9 @@ const ADMIN_PASS = process.env.ADMIN_PASS || "admin";
 
 if (!fs.existsSync(DATA)) fs.mkdirSync(DATA);
 
-const db = new Database(DB_PATH);
-db.pragma("journal_mode = WAL");
+const db = new DatabaseSync(DB_PATH);
 db.exec(`
+  pragma journal_mode = wal;
   create table if not exists events (
     id text primary key,
     title text not null,
