@@ -230,7 +230,7 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      "<table><tr><th>название</th><th>до</th><th>статус</th><th></th></tr>" +
+      '<div class="table-scroll"><table><tr><th>название</th><th>до</th><th>статус</th><th></th></tr>' +
       events
         .map((e) => {
           const st = e.archived
@@ -241,9 +241,9 @@ function loadAdmin() {
             esc(e.title) +
             "</td><td>" +
             esc(fmt(e.endsAt)) +
-            '</td><td>' +
+            "</td><td>" +
             st +
-            '</td><td class="top">' +
+            "</td><td>" +
             '<button class="btn" data-edit="' +
             esc(e.id) +
             '" type="button">изменить</button> ' +
@@ -258,7 +258,7 @@ function loadAdmin() {
           );
         })
         .join("") +
-      "</table>";
+      "</table></div>";
 
     box.querySelectorAll("[data-edit]").forEach((b) => {
       b.onclick = () => {
@@ -332,7 +332,7 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      "<table><tr><th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>описание</th><th>когда</th></tr>" +
+      '<div class="table-scroll"><table><tr><th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>описание</th><th>когда</th></tr>' +
       regs
         .map(
           (r) =>
@@ -351,7 +351,7 @@ function loadAdmin() {
             "</td></tr>"
         )
         .join("") +
-      "</table>";
+      "</table></div>";
   }
 
   qs("#createBtn").onclick = async () => {

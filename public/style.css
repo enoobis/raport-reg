@@ -10,6 +10,8 @@ body {
   color: #ffff00;
   font-family: "times new roman", times, serif;
   font-size: 16px;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
 a {
@@ -239,4 +241,90 @@ tr:nth-child(even) td {
 
 .tag.arch {
   background: #808080;
+}
+
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .wrap {
+    max-width: 100%;
+    margin: 0;
+    padding: 6px;
+  }
+
+  .banner {
+    border-width: 3px;
+    padding: 8px 6px;
+    margin-bottom: 8px;
+  }
+
+  .banner h1 {
+    font-size: 20px;
+    letter-spacing: 0;
+    line-height: 1.2;
+  }
+
+  .panel {
+    padding: 10px;
+    border-width: 3px;
+  }
+
+  .panel h2 {
+    font-size: 16px;
+  }
+
+  .btn {
+    min-height: 44px;
+    padding: 10px 12px;
+    font-size: 15px;
+  }
+
+  .top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .top input,
+  .top select,
+  .top .btn {
+    width: 100%;
+    min-width: 0;
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+    padding: 10px 8px;
+  }
+
+  table {
+    font-size: 12px;
+    min-width: 560px;
+  }
+
+  th,
+  td {
+    padding: 6px 5px;
+    white-space: nowrap;
+  }
+
+  td:nth-child(5) {
+    white-space: normal;
+    min-width: 140px;
+  }
+
+  .footer {
+    font-size: 11px;
+    padding: 0 4px 12px;
+  }
+
+  .tag {
+    margin-left: 0;
+    margin-top: 4px;
+  }
 }
