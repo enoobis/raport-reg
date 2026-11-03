@@ -243,13 +243,18 @@ app.post("/api/panel/events/:id/update", (req, res) => {
       return res.status(400).json({ error: "нужны название и дата" });
     }
 
-    const endsIso = parseEndsAt(endsRaw);
+    let endsIso = parseEndsAt(endsRaw);
     if (!endsIso) return res.status(400).json({ error: "некорректная дата" });
 
     let archived = 0;
     if (req.body.archived === true || req.body.archived === 1) archived = 1;
     else if (req.body.archived === false || req.body.archived === 0) archived = 0;
     else archived = new Date(endsIso).getTime() < Date.now() ? 1 : 0;
+
+    // открываем из архива — дата в будущем, иначе сразу снова закроется
+    if (archived === 0 && new Date(endsIso).getTime() <= Date.now()) {
+      endsIso = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
+    }
 
     db.prepare(
       `update events set title = ?, ends_at = ?, archived = ? where id = ?`

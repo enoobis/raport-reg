@@ -46,8 +46,19 @@ function toLocalInput(iso) {
 
 async function api(url, opts) {
   const res = await fetch(url, opts);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || "ошибка");
+  const text = await res.text();
+  let data = {};
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch (e) {
+    data = {};
+  }
+  if (!res.ok) {
+    throw new Error(
+      data.error ||
+        "ошибка " + res.status + (text ? ": " + text.slice(0, 120) : "")
+    );
+  }
   return data;
 }
 
@@ -257,10 +268,22 @@ function loadAdmin() {
     box.querySelectorAll("[data-unarch]").forEach((b) => {
       b.onclick = async () => {
         try {
-          await api("/api/panel/events/" + b.dataset.unarch + "/unarchive", {
+          const e = eventsCache.find((x) => x.id === b.dataset.unarch);
+          if (!e) throw new Error("мероприятие не найдено");
+          let endsAt = e.endsAt;
+          if (new Date(endsAt).getTime() <= Date.now()) {
+            endsAt = new Date(
+              Date.now() + 7 * 24 * 60 * 60 * 1000
+            ).toISOString();
+          }
+          await api("/api/panel/events/" + e.id + "/update", {
             method: "POST",
             headers: headers(),
-            body: JSON.stringify({}),
+            body: JSON.stringify({
+              title: e.title,
+              endsAt: endsAt,
+              archived: false,
+            }),
           });
           await refresh();
         } catch (err) {
