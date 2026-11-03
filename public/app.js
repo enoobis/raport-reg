@@ -120,7 +120,7 @@ function loadAdmin() {
   }
 
   async function tryLogin(p) {
-    await api("/api/admin/login", {
+    await api("/api/panel/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ pass: p }),
@@ -153,7 +153,7 @@ function loadAdmin() {
   }
 
   async function refresh() {
-    const events = await api("/api/admin/events", { headers: headers() });
+    const events = await api("/api/panel/events", { headers: headers() });
     renderEvents(events);
     fillFilter(events);
     await loadRegs();
@@ -194,7 +194,7 @@ function loadAdmin() {
 
     box.querySelectorAll("[data-arch]").forEach((b) => {
       b.onclick = async () => {
-        await api("/api/admin/events/" + b.dataset.arch + "/archive", {
+        await api("/api/panel/events/" + b.dataset.arch + "/archive", {
           method: "POST",
           headers: headers(),
         });
@@ -228,7 +228,7 @@ function loadAdmin() {
     const params = new URLSearchParams();
     if (eventId) params.set("eventId", eventId);
     if (q) params.set("q", q);
-    const regs = await api("/api/admin/regs?" + params.toString(), {
+    const regs = await api("/api/panel/regs?" + params.toString(), {
       headers: headers(),
     });
     const box = qs("#regs");
@@ -259,7 +259,7 @@ function loadAdmin() {
     const title = qs("#title").value.trim();
     const ends = qs("#ends").value;
     try {
-      await api("/api/admin/events", {
+      await api("/api/panel/events", {
         method: "POST",
         headers: headers(),
         body: JSON.stringify({ title, endsAt: ends }),
@@ -286,7 +286,7 @@ function loadAdmin() {
       return;
     }
     location.href =
-      "/api/admin/export/" +
+      "/api/panel/export/" +
       encodeURIComponent(eventId) +
       "?pass=" +
       encodeURIComponent(pass);

@@ -154,14 +154,14 @@ app.post("/api/register", (req, res) => {
   res.json({ ok: true });
 });
 
-app.post("/api/admin/login", (req, res) => {
+app.post("/api/panel/login", (req, res) => {
   if (req.body.pass !== ADMIN_PASS) {
     return res.status(401).json({ error: "неверный пароль" });
   }
   res.json({ ok: true });
 });
 
-app.get("/api/admin/events", (req, res) => {
+app.get("/api/panel/events", (req, res) => {
   if (!checkAdmin(req, res)) return;
   archiveExpired();
   const rows = db
@@ -170,7 +170,7 @@ app.get("/api/admin/events", (req, res) => {
   res.json(rows.map(mapEvent));
 });
 
-app.post("/api/admin/events", (req, res) => {
+app.post("/api/panel/events", (req, res) => {
   if (!checkAdmin(req, res)) return;
   const { title, endsAt } = req.body;
   if (!title || !endsAt) {
@@ -193,7 +193,7 @@ app.post("/api/admin/events", (req, res) => {
   res.json(event);
 });
 
-app.post("/api/admin/events/:id/archive", (req, res) => {
+app.post("/api/panel/events/:id/archive", (req, res) => {
   if (!checkAdmin(req, res)) return;
   const e = mapEvent(
     db.prepare(`select * from events where id = ?`).get(req.params.id)
@@ -204,7 +204,7 @@ app.post("/api/admin/events/:id/archive", (req, res) => {
   res.json(e);
 });
 
-app.get("/api/admin/regs", (req, res) => {
+app.get("/api/panel/regs", (req, res) => {
   if (!checkAdmin(req, res)) return;
   const { eventId, q } = req.query;
   let sql = `select * from regs where 1=1`;
@@ -223,7 +223,7 @@ app.get("/api/admin/regs", (req, res) => {
   res.json(rows.map(mapReg));
 });
 
-app.get("/api/admin/export/:eventId", (req, res) => {
+app.get("/api/panel/export/:eventId", (req, res) => {
   if (!checkAdmin(req, res)) return;
   const event = mapEvent(
     db.prepare(`select * from events where id = ?`).get(req.params.eventId)
