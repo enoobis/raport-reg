@@ -19,9 +19,11 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
+const TZ = "Asia/Bishkek";
+
 function fmt(iso) {
   try {
-    return new Date(iso).toLocaleString("ru-RU");
+    return new Date(iso).toLocaleString("ru-RU", { timeZone: TZ });
   } catch (e) {
     return iso;
   }
@@ -30,17 +32,28 @@ function fmt(iso) {
 function toLocalInput(iso) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  const pad = (n) => String(n).padStart(2, "0");
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).formatToParts(d);
+  const get = (t) => (parts.find((p) => p.type === t) || {}).value || "00";
+  let hour = get("hour");
+  if (hour === "24") hour = "00";
   return (
-    d.getFullYear() +
+    get("year") +
     "-" +
-    pad(d.getMonth() + 1) +
+    get("month") +
     "-" +
-    pad(d.getDate()) +
+    get("day") +
     "T" +
-    pad(d.getHours()) +
+    hour +
     ":" +
-    pad(d.getMinutes())
+    get("minute")
   );
 }
 

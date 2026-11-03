@@ -105,9 +105,36 @@ function requiredText(v) {
 }
 
 function parseEndsAt(value) {
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return null;
-  return d.toISOString();
+  const s = String(value || "").trim();
+  if (!s) return null;
+  // уже с таймзоной
+  if (/[zZ]|[+-]\d{2}:?\d{2}$/.test(s)) {
+    const d = new Date(s);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  // datetime-local без зоны = время кыргызстана (utc+6)
+  const m = s.match(
+    /^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?/
+  );
+  if (m) {
+    const iso =
+      m[1] +
+      "-" +
+      m[2] +
+      "-" +
+      m[3] +
+      "T" +
+      m[4] +
+      ":" +
+      m[5] +
+      ":" +
+      (m[6] || "00") +
+      "+06:00";
+    const d = new Date(iso);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  const d = new Date(s);
+  return Number.isNaN(d.getTime()) ? null : d.toISOString();
 }
 
 app.get("/api/events", (req, res) => {
