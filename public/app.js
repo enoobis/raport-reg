@@ -27,6 +27,23 @@ function fmt(iso) {
   }
 }
 
+function toLocalInput(iso) {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n) => String(n).padStart(2, "0");
+  return (
+    d.getFullYear() +
+    "-" +
+    pad(d.getMonth() + 1) +
+    "-" +
+    pad(d.getDate()) +
+    "T" +
+    pad(d.getHours()) +
+    ":" +
+    pad(d.getMinutes())
+  );
+}
+
 async function api(url, opts) {
   const res = await fetch(url, opts);
   const data = await res.json().catch(() => ({}));
@@ -96,6 +113,8 @@ async function loadRegister() {
           fio: qs("#fio").value,
           group: qs("#group").value,
           phone: qs("#phone").value,
+          projectTitle: qs("#projectTitle").value,
+          projectDesc: qs("#projectDesc").value,
         }),
       });
       form.reset();
@@ -109,6 +128,7 @@ async function loadRegister() {
 function loadAdmin() {
   const passKey = "raport_admin";
   let pass = sessionStorage.getItem(passKey) || "";
+  let eventsCache = [];
 
   const loginBox = qs("#loginBox");
   const desk = qs("#desk");
@@ -152,10 +172,31 @@ function loadAdmin() {
     return { "Content-Type": "application/json", "x-admin": pass };
   }
 
+  function resetForm() {
+    qs("#editId").value = "";
+    qs("#title").value = "";
+    qs("#ends").value = "";
+    qs("#formHeading").textContent = "новое мероприятие";
+    qs("#createBtn").textContent = "создать";
+    qs("#cancelEdit").style.display = "none";
+    show(qs("#createMsg"), "", "");
+  }
+
+  function startEdit(e) {
+    qs("#editId").value = e.id;
+    qs("#title").value = e.title;
+    qs("#ends").value = toLocalInput(e.endsAt);
+    qs("#formHeading").textContent = "изменить мероприятие";
+    qs("#createBtn").textContent = "сохранить";
+    qs("#cancelEdit").style.display = "inline-block";
+    show(qs("#createMsg"), "", "");
+    qs("#title").focus();
+  }
+
   async function refresh() {
-    const events = await api("/api/panel/events", { headers: headers() });
-    renderEvents(events);
-    fillFilter(events);
+    eventsCache = await api("/api/panel/events", { headers: headers() });
+    renderEvents(eventsCache);
+    fillFilter(eventsCache);
     await loadRegs();
   }
 
@@ -172,25 +213,34 @@ function loadAdmin() {
           const st = e.archived
             ? '<span class="tag arch">архив</span>'
             : '<span class="tag">открыто</span>';
-          const btn = e.archived
-            ? ""
-            : '<button class="btn red" data-arch="' +
-              esc(e.id) +
-              '" type="button">в архив</button>';
           return (
             "<tr><td>" +
             esc(e.title) +
             "</td><td>" +
             esc(fmt(e.endsAt)) +
-            "</td><td>" +
+            '</td><td>' +
             st +
-            "</td><td>" +
-            btn +
+            '</td><td class="top">' +
+            '<button class="btn" data-edit="' +
+            esc(e.id) +
+            '" type="button">изменить</button> ' +
+            (e.archived
+              ? ""
+              : '<button class="btn red" data-arch="' +
+                esc(e.id) +
+                '" type="button">в архив</button>') +
             "</td></tr>"
           );
         })
         .join("") +
       "</table>";
+
+    box.querySelectorAll("[data-edit]").forEach((b) => {
+      b.onclick = () => {
+        const e = eventsCache.find((x) => x.id === b.dataset.edit);
+        if (e) startEdit(e);
+      };
+    });
 
     box.querySelectorAll("[data-arch]").forEach((b) => {
       b.onclick = async () => {
@@ -237,7 +287,7 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      "<table><tr><th>фио</th><th>группа</th><th>телефон</th><th>когда</th></tr>" +
+      "<table><tr><th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>описание</th><th>когда</th></tr>" +
       regs
         .map(
           (r) =>
@@ -247,6 +297,10 @@ function loadAdmin() {
             esc(r.group) +
             "</td><td>" +
             esc(r.phone) +
+            "</td><td>" +
+            esc(r.projectTitle) +
+            "</td><td>" +
+            esc(r.projectDesc) +
             "</td><td>" +
             esc(fmt(r.at)) +
             "</td></tr>"
@@ -258,20 +312,37 @@ function loadAdmin() {
   qs("#createBtn").onclick = async () => {
     const title = qs("#title").value.trim();
     const ends = qs("#ends").value;
+    const editId = qs("#editId").value;
+    if (!title || !ends) {
+      show(qs("#createMsg"), "заполни название и дату", "err");
+      return;
+    }
     try {
-      await api("/api/panel/events", {
-        method: "POST",
-        headers: headers(),
-        body: JSON.stringify({ title, endsAt: ends }),
-      });
-      qs("#title").value = "";
-      qs("#ends").value = "";
-      show(qs("#createMsg"), "создано", "ok");
+      if (editId) {
+        await api("/api/panel/events/" + encodeURIComponent(editId), {
+          method: "PUT",
+          headers: headers(),
+          body: JSON.stringify({ title, endsAt: ends, archived: false }),
+        });
+        show(qs("#createMsg"), "сохранено", "ok");
+        resetForm();
+      } else {
+        await api("/api/panel/events", {
+          method: "POST",
+          headers: headers(),
+          body: JSON.stringify({ title, endsAt: ends }),
+        });
+        show(qs("#createMsg"), "создано", "ok");
+        qs("#title").value = "";
+        qs("#ends").value = "";
+      }
       await refresh();
     } catch (e) {
       show(qs("#createMsg"), e.message, "err");
     }
   };
+
+  qs("#cancelEdit").onclick = () => resetForm();
 
   qs("#searchBtn").onclick = () => loadRegs().catch((e) => alert(e.message));
   qs("#eventFilter").onchange = () => loadRegs().catch((e) => alert(e.message));

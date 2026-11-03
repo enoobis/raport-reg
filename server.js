@@ -28,6 +28,8 @@ db.exec(`
     fio_norm text not null,
     grp text not null,
     phone text not null,
+    project_title text not null default '',
+    project_desc text not null default '',
     at text not null,
     foreign key (event_id) references events(id)
   );
@@ -35,6 +37,15 @@ db.exec(`
   create unique index if not exists idx_regs_unique_name
     on regs(event_id, fio_norm);
 `);
+
+function ensureColumn(table, column, def) {
+  const cols = db.prepare(`pragma table_info(${table})`).all();
+  if (!cols.some((c) => c.name === column)) {
+    db.exec(`alter table ${table} add column ${column} ${def}`);
+  }
+}
+ensureColumn("regs", "project_title", "text not null default ''");
+ensureColumn("regs", "project_desc", "text not null default ''");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -59,6 +70,8 @@ function mapReg(row) {
     fio: row.fio,
     group: row.grp,
     phone: row.phone,
+    projectTitle: row.project_title || "",
+    projectDesc: row.project_desc || "",
     at: row.at,
   };
 }
@@ -86,6 +99,11 @@ function normName(s) {
     .replace(/\s+/g, " ");
 }
 
+function requiredText(v) {
+  const s = String(v || "").trim();
+  return s ? s : null;
+}
+
 app.get("/api/events", (req, res) => {
   archiveExpired();
   const rows = db
@@ -110,8 +128,14 @@ app.get("/api/events/:id", (req, res) => {
 
 app.post("/api/register", (req, res) => {
   archiveExpired();
-  const { eventId, fio, group, phone } = req.body;
-  if (!eventId || !fio || !group || !phone) {
+  const fio = requiredText(req.body.fio);
+  const group = requiredText(req.body.group);
+  const phone = requiredText(req.body.phone);
+  const projectTitle = requiredText(req.body.projectTitle);
+  const projectDesc = requiredText(req.body.projectDesc);
+  const eventId = requiredText(req.body.eventId);
+
+  if (!eventId || !fio || !group || !phone || !projectTitle || !projectDesc) {
     return res.status(400).json({ error: "заполни все поля" });
   }
 
@@ -133,15 +157,18 @@ app.post("/api/register", (req, res) => {
 
   try {
     db.prepare(
-      `insert into regs (id, event_id, fio, fio_norm, grp, phone, at)
-       values (?, ?, ?, ?, ?, ?, ?)`
+      `insert into regs
+        (id, event_id, fio, fio_norm, grp, phone, project_title, project_desc, at)
+       values (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(
       String(Date.now()) + Math.random().toString(36).slice(2, 7),
       eventId,
-      String(fio).trim(),
+      fio,
       name,
-      String(group).trim(),
-      String(phone).trim(),
+      group,
+      phone,
+      projectTitle,
+      projectDesc,
       new Date().toISOString()
     );
   } catch (err) {
@@ -172,14 +199,15 @@ app.get("/api/panel/events", (req, res) => {
 
 app.post("/api/panel/events", (req, res) => {
   if (!checkAdmin(req, res)) return;
-  const { title, endsAt } = req.body;
+  const title = requiredText(req.body.title);
+  const endsAt = requiredText(req.body.endsAt);
   if (!title || !endsAt) {
     return res.status(400).json({ error: "нужны название и дата" });
   }
 
   const event = {
     id: String(Date.now()),
-    title: String(title).trim(),
+    title,
     endsAt: new Date(endsAt).toISOString(),
     archived: false,
     createdAt: new Date().toISOString(),
@@ -191,6 +219,38 @@ app.post("/api/panel/events", (req, res) => {
   ).run(event.id, event.title, event.endsAt, event.createdAt);
 
   res.json(event);
+});
+
+app.put("/api/panel/events/:id", (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const e = mapEvent(
+    db.prepare(`select * from events where id = ?`).get(req.params.id)
+  );
+  if (!e) return res.status(404).json({ error: "не найдено" });
+
+  const title = requiredText(req.body.title);
+  const endsAt = requiredText(req.body.endsAt);
+  if (!title || !endsAt) {
+    return res.status(400).json({ error: "нужны название и дата" });
+  }
+
+  const endsIso = new Date(endsAt).toISOString();
+  const archived =
+    req.body.archived === true || req.body.archived === 1
+      ? 1
+      : req.body.archived === false || req.body.archived === 0
+        ? 0
+        : new Date(endsIso).getTime() < Date.now()
+          ? 1
+          : 0;
+
+  db.prepare(
+    `update events set title = ?, ends_at = ?, archived = ? where id = ?`
+  ).run(title, endsIso, archived, req.params.id);
+
+  res.json(
+    mapEvent(db.prepare(`select * from events where id = ?`).get(req.params.id))
+  );
 });
 
 app.post("/api/panel/events/:id/archive", (req, res) => {
@@ -214,9 +274,12 @@ app.get("/api/panel/regs", (req, res) => {
     params.push(eventId);
   }
   if (q) {
-    sql += ` and (lower(fio) like ? or lower(grp) like ? or lower(phone) like ?)`;
+    sql += ` and (
+      lower(fio) like ? or lower(grp) like ? or lower(phone) like ?
+      or lower(project_title) like ? or lower(project_desc) like ?
+    )`;
     const s = "%" + String(q).toLowerCase() + "%";
-    params.push(s, s, s);
+    params.push(s, s, s, s, s);
   }
   sql += ` order by at desc`;
   const rows = db.prepare(sql).all(...params);
@@ -235,7 +298,10 @@ app.get("/api/panel/export/:eventId", (req, res) => {
     .all(event.id)
     .map(mapReg);
 
-  const lines = regs.map((r) => `//${r.fio}//${r.group}//${r.phone}//`);
+  const lines = regs.map(
+    (r) =>
+      `//${r.fio}//${r.group}//${r.phone}//${r.projectTitle}//${r.projectDesc}//`
+  );
   const name =
     "raport_" +
     event.title.replace(/[^\wа-яё\-]+/gi, "_").slice(0, 40) +

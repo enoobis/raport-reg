@@ -18,15 +18,15 @@
 
         <form id="form">
           <div class="row">
-            <label for="fio">фио</label>
+            <label for="fio">фио *</label>
             <input id="fio" name="fio" required maxlength="120" autocomplete="name" />
           </div>
           <div class="row">
-            <label for="group">группа</label>
+            <label for="group">группа *</label>
             <input id="group" name="group" required maxlength="40" />
           </div>
           <div class="row">
-            <label for="phone">номер телефона</label>
+            <label for="phone">номер телефона *</label>
             <input
               id="phone"
               name="phone"
@@ -35,6 +35,14 @@
               inputmode="tel"
               autocomplete="tel"
             />
+          </div>
+          <div class="row">
+            <label for="projectTitle">название проекта *</label>
+            <input id="projectTitle" name="projectTitle" required maxlength="160" />
+          </div>
+          <div class="row">
+            <label for="projectDesc">описание проекта *</label>
+            <textarea id="projectDesc" name="projectDesc" required maxlength="2000" rows="4"></textarea>
           </div>
           <div class="top" style="margin-top: 12px">
             <button class="btn green" type="submit">зарегистрироваться</button>

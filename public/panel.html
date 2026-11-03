@@ -24,16 +24,22 @@
 
       <div id="desk" style="display: none">
         <div class="panel">
-          <h2>новое мероприятие</h2>
+          <h2 id="formHeading">новое мероприятие</h2>
+          <input type="hidden" id="editId" value="" />
           <div class="row">
-            <label for="title">название</label>
-            <input id="title" maxlength="100" />
+            <label for="title">название *</label>
+            <input id="title" maxlength="100" required />
           </div>
           <div class="row">
-            <label for="ends">конец регистрации</label>
-            <input id="ends" type="datetime-local" />
+            <label for="ends">конец регистрации *</label>
+            <input id="ends" type="datetime-local" required />
           </div>
-          <button class="btn green" id="createBtn" type="button">создать</button>
+          <div class="top">
+            <button class="btn green" id="createBtn" type="button">создать</button>
+            <button class="btn gray" id="cancelEdit" type="button" style="display: none">
+              отмена
+            </button>
+          </div>
           <div id="createMsg"></div>
         </div>
 
@@ -48,7 +54,7 @@
             <select id="eventFilter">
               <option value="">все</option>
             </select>
-            <input id="search" placeholder="поиск: фио / группа / телефон" />
+            <input id="search" placeholder="поиск" />
             <button class="btn" id="searchBtn" type="button">найти</button>
             <button class="btn green" id="exportBtn" type="button">txt</button>
           </div>

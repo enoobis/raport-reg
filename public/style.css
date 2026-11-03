@@ -118,7 +118,8 @@ label {
 }
 
 input,
-select {
+select,
+textarea {
   width: 100%;
   padding: 6px;
   border: 2px inset #808080;
@@ -126,6 +127,11 @@ select {
   font-size: 15px;
   background: #fff;
   color: #000;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
 }
 
 .row {
