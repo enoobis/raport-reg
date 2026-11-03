@@ -225,7 +225,9 @@ function loadAdmin() {
             esc(e.id) +
             '" type="button">изменить</button> ' +
             (e.archived
-              ? ""
+              ? '<button class="btn green" data-unarch="' +
+                esc(e.id) +
+                '" type="button">из архива</button>'
               : '<button class="btn red" data-arch="' +
                 esc(e.id) +
                 '" type="button">в архив</button>') +
@@ -247,6 +249,29 @@ function loadAdmin() {
         await api("/api/panel/events/" + b.dataset.arch + "/archive", {
           method: "POST",
           headers: headers(),
+        });
+        await refresh();
+      };
+    });
+
+    box.querySelectorAll("[data-unarch]").forEach((b) => {
+      b.onclick = async () => {
+        const e = eventsCache.find((x) => x.id === b.dataset.unarch);
+        if (!e) return;
+        let endsAt = e.endsAt;
+        if (new Date(endsAt).getTime() < Date.now()) {
+          startEdit(e);
+          show(
+            qs("#createMsg"),
+            "поставь новую дату и нажми сохранить",
+            "info"
+          );
+          return;
+        }
+        await api("/api/panel/events/" + e.id + "/unarchive", {
+          method: "POST",
+          headers: headers(),
+          body: JSON.stringify({ endsAt }),
         });
         await refresh();
       };
@@ -319,11 +344,14 @@ function loadAdmin() {
     }
     try {
       if (editId) {
-        await api("/api/panel/events/" + encodeURIComponent(editId), {
-          method: "PUT",
-          headers: headers(),
-          body: JSON.stringify({ title, endsAt: ends, archived: false }),
-        });
+        await api(
+          "/api/panel/events/" + encodeURIComponent(editId) + "/update",
+          {
+            method: "POST",
+            headers: headers(),
+            body: JSON.stringify({ title, endsAt: ends, archived: false }),
+          }
+        );
         show(qs("#createMsg"), "сохранено", "ok");
         resetForm();
       } else {

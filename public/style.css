@@ -8,7 +8,7 @@ body {
   padding: 0;
   background: #000080;
   color: #ffff00;
-  font-family: "comic sans ms", "comic sans", cursive, sans-serif;
+  font-family: "times new roman", times, serif;
   font-size: 16px;
 }
 
@@ -123,7 +123,7 @@ textarea {
   width: 100%;
   padding: 6px;
   border: 2px inset #808080;
-  font-family: "courier new", monospace;
+  font-family: "times new roman", times, serif;
   font-size: 15px;
   background: #fff;
   color: #000;
@@ -168,7 +168,7 @@ table {
   border-collapse: collapse;
   background: #fff;
   color: #000;
-  font-family: "courier new", monospace;
+  font-family: "times new roman", times, serif;
   font-size: 13px;
 }
 

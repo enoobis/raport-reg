@@ -104,6 +104,12 @@ function requiredText(v) {
   return s ? s : null;
 }
 
+function parseEndsAt(value) {
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return null;
+  return d.toISOString();
+}
+
 app.get("/api/events", (req, res) => {
   archiveExpired();
   const rows = db
@@ -200,15 +206,17 @@ app.get("/api/panel/events", (req, res) => {
 app.post("/api/panel/events", (req, res) => {
   if (!checkAdmin(req, res)) return;
   const title = requiredText(req.body.title);
-  const endsAt = requiredText(req.body.endsAt);
-  if (!title || !endsAt) {
+  const endsRaw = requiredText(req.body.endsAt);
+  if (!title || !endsRaw) {
     return res.status(400).json({ error: "нужны название и дата" });
   }
+  const endsAt = parseEndsAt(endsRaw);
+  if (!endsAt) return res.status(400).json({ error: "некорректная дата" });
 
   const event = {
     id: String(Date.now()),
     title,
-    endsAt: new Date(endsAt).toISOString(),
+    endsAt,
     archived: false,
     createdAt: new Date().toISOString(),
   };
@@ -221,36 +229,40 @@ app.post("/api/panel/events", (req, res) => {
   res.json(event);
 });
 
-app.put("/api/panel/events/:id", (req, res) => {
+app.post("/api/panel/events/:id/update", (req, res) => {
   if (!checkAdmin(req, res)) return;
-  const e = mapEvent(
-    db.prepare(`select * from events where id = ?`).get(req.params.id)
-  );
-  if (!e) return res.status(404).json({ error: "не найдено" });
+  try {
+    const e = mapEvent(
+      db.prepare(`select * from events where id = ?`).get(req.params.id)
+    );
+    if (!e) return res.status(404).json({ error: "не найдено" });
 
-  const title = requiredText(req.body.title);
-  const endsAt = requiredText(req.body.endsAt);
-  if (!title || !endsAt) {
-    return res.status(400).json({ error: "нужны название и дата" });
+    const title = requiredText(req.body.title);
+    const endsRaw = requiredText(req.body.endsAt);
+    if (!title || !endsRaw) {
+      return res.status(400).json({ error: "нужны название и дата" });
+    }
+
+    const endsIso = parseEndsAt(endsRaw);
+    if (!endsIso) return res.status(400).json({ error: "некорректная дата" });
+
+    let archived = 0;
+    if (req.body.archived === true || req.body.archived === 1) archived = 1;
+    else if (req.body.archived === false || req.body.archived === 0) archived = 0;
+    else archived = new Date(endsIso).getTime() < Date.now() ? 1 : 0;
+
+    db.prepare(
+      `update events set title = ?, ends_at = ?, archived = ? where id = ?`
+    ).run(title, endsIso, archived, req.params.id);
+
+    res.json(
+      mapEvent(
+        db.prepare(`select * from events where id = ?`).get(req.params.id)
+      )
+    );
+  } catch (err) {
+    res.status(500).json({ error: String(err.message || "ошибка сохранения") });
   }
-
-  const endsIso = new Date(endsAt).toISOString();
-  const archived =
-    req.body.archived === true || req.body.archived === 1
-      ? 1
-      : req.body.archived === false || req.body.archived === 0
-        ? 0
-        : new Date(endsIso).getTime() < Date.now()
-          ? 1
-          : 0;
-
-  db.prepare(
-    `update events set title = ?, ends_at = ?, archived = ? where id = ?`
-  ).run(title, endsIso, archived, req.params.id);
-
-  res.json(
-    mapEvent(db.prepare(`select * from events where id = ?`).get(req.params.id))
-  );
 });
 
 app.post("/api/panel/events/:id/archive", (req, res) => {
@@ -262,6 +274,38 @@ app.post("/api/panel/events/:id/archive", (req, res) => {
   db.prepare(`update events set archived = 1 where id = ?`).run(req.params.id);
   e.archived = true;
   res.json(e);
+});
+
+app.post("/api/panel/events/:id/unarchive", (req, res) => {
+  if (!checkAdmin(req, res)) return;
+  const e = mapEvent(
+    db.prepare(`select * from events where id = ?`).get(req.params.id)
+  );
+  if (!e) return res.status(404).json({ error: "не найдено" });
+
+  let endsAt = e.endsAt;
+  if (new Date(endsAt).getTime() < Date.now()) {
+    const next = requiredText(req.body.endsAt);
+    if (!next) {
+      return res
+        .status(400)
+        .json({ error: "укажи новую дату конца регистрации" });
+    }
+    const parsed = parseEndsAt(next);
+    if (!parsed) return res.status(400).json({ error: "некорректная дата" });
+    if (new Date(parsed).getTime() < Date.now()) {
+      return res.status(400).json({ error: "дата должна быть в будущем" });
+    }
+    endsAt = parsed;
+  }
+
+  db.prepare(
+    `update events set archived = 0, ends_at = ? where id = ?`
+  ).run(endsAt, req.params.id);
+
+  res.json(
+    mapEvent(db.prepare(`select * from events where id = ?`).get(req.params.id))
+  );
 });
 
 app.get("/api/panel/regs", (req, res) => {
