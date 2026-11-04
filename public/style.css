@@ -197,11 +197,10 @@ textarea {
 .filters-row,
 .row-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 10px;
-  margin-bottom: 8px;
-  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+  margin: 0;
+  align-items: stretch;
 }
 
 .top input,
@@ -277,9 +276,12 @@ textarea {
   background: #fff;
 }
 
+.table-wrap.no-scroll {
+  overflow-x: hidden;
+}
+
 .data-table {
   width: 100%;
-  min-width: 900px;
   border-collapse: collapse;
   table-layout: fixed;
   background: #fff;
@@ -291,9 +293,9 @@ textarea {
 .data-table th,
 .data-table td {
   border: 2px solid #000;
-  padding: 8px;
+  padding: 6px;
   text-align: left;
-  vertical-align: top;
+  vertical-align: middle;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
@@ -303,34 +305,49 @@ textarea {
   color: #ffff00;
 }
 
-.data-table th:nth-child(1),
-.data-table td:nth-child(1) {
+.events-table th:nth-child(1),
+.events-table td:nth-child(1) {
+  width: 36%;
+}
+
+.events-table th:nth-child(2),
+.events-table td:nth-child(2) {
+  width: 28%;
+}
+
+.events-table th:nth-child(3),
+.events-table td:nth-child(3) {
+  width: 36%;
+}
+
+.regs-table th:nth-child(1),
+.regs-table td:nth-child(1) {
   width: 16%;
 }
 
-.data-table th:nth-child(2),
-.data-table td:nth-child(2) {
+.regs-table th:nth-child(2),
+.regs-table td:nth-child(2) {
   width: 12%;
 }
 
-.data-table th:nth-child(3),
-.data-table td:nth-child(3) {
-  width: 13%;
-}
-
-.data-table th:nth-child(4),
-.data-table td:nth-child(4) {
+.regs-table th:nth-child(3),
+.regs-table td:nth-child(3) {
   width: 14%;
 }
 
-.data-table th:nth-child(5),
-.data-table td:nth-child(5) {
-  width: 30%;
+.regs-table th:nth-child(4),
+.regs-table td:nth-child(4) {
+  width: 14%;
 }
 
-.data-table th:nth-child(6),
-.data-table td:nth-child(6) {
-  width: 15%;
+.regs-table th:nth-child(5),
+.regs-table td:nth-child(5) {
+  width: 28%;
+}
+
+.regs-table th:nth-child(6),
+.regs-table td:nth-child(6) {
+  width: 16%;
 }
 
 .data-table tbody tr:nth-child(even) {
@@ -342,7 +359,7 @@ textarea {
 }
 
 .td-date {
-  white-space: nowrap;
+  white-space: normal;
 }
 
 .td-desc {
@@ -391,7 +408,4 @@ textarea {
     min-width: 0;
   }
 
-  .data-table {
-    min-width: 900px;
-  }
 }

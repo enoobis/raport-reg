@@ -237,7 +237,7 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      '<div class="table-wrap"><table class="data-table">' +
+      '<div class="table-wrap no-scroll"><table class="data-table events-table">' +
       "<thead><tr>" +
       "<th>название</th><th>до</th><th>действия</th>" +
       "</tr></thead><tbody>" +
@@ -340,7 +340,7 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      '<div class="table-wrap"><table class="data-table">' +
+      '<div class="table-wrap no-scroll"><table class="data-table regs-table">' +
       "<thead><tr>" +
       "<th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>описание</th><th>когда</th>" +
       "</tr></thead><tbody>" +
