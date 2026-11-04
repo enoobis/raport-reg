@@ -348,7 +348,7 @@ function loadAdmin() {
     box.innerHTML =
       '<div class="table-wrap"><table class="data-table">' +
       "<thead><tr>" +
-      "<th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>когда</th>" +
+      "<th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>описание</th><th>когда</th>" +
       "</tr></thead><tbody>" +
       regs
         .map(
@@ -366,15 +366,13 @@ function loadAdmin() {
             "<td>" +
             esc(r.projectTitle) +
             "</td>" +
+            '<td class="td-desc">' +
+            esc(r.projectDesc) +
+            "</td>" +
             '<td class="td-date">' +
             esc(fmt(r.at)) +
             "</td>" +
-            "</tr>" +
-            '<tr class="desc-row"><td colspan="5">' +
-            '<div class="desc-label">описание</div>' +
-            '<div class="desc-text">' +
-            esc(r.projectDesc) +
-            "</div></td></tr>"
+            "</tr>"
         )
         .join("") +
       "</tbody></table></div>";
