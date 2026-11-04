@@ -4,18 +4,18 @@
   --bg: #ffffff;
   --surface: #ffffff;
   --soft: #f6f8fb;
-  --line: #e6ebf2;
-  --text: #1a2332;
-  --muted: #66788f;
-  --navy: #0f2c4c;
+  --line: #d7dee8;
+  --text: #0d1520;
+  --muted: #3f4f63;
+  --navy: #0a243f;
   --orange: #e59a1a;
   --orange-soft: #fff7e8;
-  --ok: #1b7a43;
+  --ok: #146538;
   --ok-bg: #eaf7f0;
-  --err: #b42318;
+  --err: #9f1d16;
   --err-bg: #fef3f2;
   --radius: 10px;
-  --max: 680px;
+  --max: 720px;
 }
 
 * {
@@ -30,8 +30,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: "Source Sans 3", "segoe ui", sans-serif;
-  font-size: 16px;
-  line-height: 1.5;
+  font-size: 18px;
+  line-height: 1.55;
   -webkit-text-size-adjust: 100%;
 }
 
@@ -69,7 +69,7 @@ a:hover {
 
 .brand-text strong {
   display: block;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 700;
   color: var(--navy);
   line-height: 1.2;
@@ -78,7 +78,7 @@ a:hover {
 .brand-text span {
   display: block;
   margin-top: 2px;
-  font-size: 13px;
+  font-size: 15px;
   color: var(--muted);
   font-weight: 500;
 }
@@ -89,7 +89,7 @@ a:hover {
 
 .banner h1 {
   margin: 0;
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 700;
   line-height: 1.2;
   color: var(--navy);
@@ -97,10 +97,10 @@ a:hover {
 }
 
 .banner .sub {
-  margin-top: 8px;
+  margin-top: 10px;
   max-width: 42ch;
   color: var(--muted);
-  font-size: 16px;
+  font-size: 18px;
 }
 
 .panel {
@@ -109,11 +109,11 @@ a:hover {
 
 .panel h2 {
   margin: 0 0 14px;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: var(--navy);
 }
 
 .list {
@@ -140,7 +140,7 @@ a:hover {
   box-shadow: none;
   text-align: left;
   font-weight: 600;
-  font-size: 16px;
+  font-size: 18px;
   gap: 4px;
 }
 
@@ -157,7 +157,7 @@ a:hover {
 
 .list .btn small {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
 }
 
@@ -173,7 +173,7 @@ a:hover {
   background: var(--navy);
   color: #fff;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
@@ -250,7 +250,7 @@ form .btn:not(.ghost):not(.gray):not(.red):hover,
 label {
   display: block;
   margin: 0 0 6px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--text);
 }
@@ -270,7 +270,7 @@ textarea {
   background: #fff;
   color: var(--text);
   font-family: inherit;
-  font-size: 16px;
+  font-size: 17px;
   outline: none;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -305,7 +305,7 @@ textarea:focus {
   margin-top: 12px;
   padding: 12px 14px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
 }
 
@@ -336,13 +336,13 @@ textarea:focus {
 table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 16px;
   background: #fff;
 }
 
 th,
 td {
-  padding: 11px 12px;
+  padding: 12px 14px;
   border-bottom: 1px solid var(--line);
   text-align: left;
   vertical-align: top;
@@ -350,10 +350,10 @@ td {
 
 th {
   background: var(--soft);
-  color: var(--muted);
-  font-size: 12px;
+  color: var(--navy);
+  font-size: 14px;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
@@ -367,7 +367,7 @@ tr:last-child td {
   border-top: 1px solid var(--line);
   text-align: center;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .footer a {
@@ -381,7 +381,7 @@ tr:last-child td {
 .muted {
   margin: 0 0 16px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .empty {
@@ -400,7 +400,7 @@ tr:last-child td {
   border-radius: 999px;
   background: var(--orange-soft);
   color: #8a5a00;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -415,7 +415,7 @@ tr:last-child td {
   }
 
   .banner h1 {
-    font-size: 26px;
+    font-size: 30px;
   }
 
   .brand img {
