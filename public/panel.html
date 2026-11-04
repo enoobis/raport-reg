@@ -7,32 +7,33 @@
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <header class="site-header">
-      <div class="inner">
+    <div class="wrap">
+      <div class="brand">
         <img src="/logo.jpg" alt="it лицей 99" />
         <div>
           <strong>it лицей 99</strong>
-          <span>панель управления</span>
+          <span>панель</span>
         </div>
       </div>
-    </header>
 
-    <main class="wrap">
-      <div class="card" id="loginBox">
-        <h1 class="page-title">вход</h1>
+      <div class="banner">
+        <h1>★ админ панель ★</h1>
+        <div class="blink">только для своих</div>
+      </div>
+
+      <div class="panel" id="loginBox">
+        <h2>вход</h2>
         <div class="row">
           <label for="pass">пароль</label>
           <input id="pass" type="password" />
         </div>
-        <div class="actions actions-one">
-          <button class="btn" id="loginBtn" type="button">войти</button>
-        </div>
+        <button class="btn" id="loginBtn" type="button">войти</button>
         <div id="loginMsg"></div>
       </div>
 
       <div id="desk" style="display: none">
-        <div class="card">
-          <h1 class="page-title" id="formHeading">новое мероприятие</h1>
+        <div class="panel">
+          <h2 id="formHeading">новое мероприятие</h2>
           <input type="hidden" id="editId" value="" />
           <div class="row">
             <label for="title">название *</label>
@@ -43,41 +44,40 @@
             <input id="ends" type="datetime-local" required />
           </div>
           <div class="actions">
-            <button class="btn" id="createBtn" type="button">создать</button>
-            <button class="btn ghost" id="cancelEdit" type="button" style="display: none">
+            <button class="btn green" id="createBtn" type="button">создать</button>
+            <button class="btn gray" id="cancelEdit" type="button" style="display: none">
               отмена
             </button>
           </div>
           <div id="createMsg"></div>
         </div>
 
-        <div class="card">
-          <h2 class="section-title">мероприятия</h2>
+        <div class="panel">
+          <h2>мероприятия</h2>
           <div id="events"></div>
         </div>
 
-        <div class="card">
-          <h2 class="section-title">записи</h2>
+        <div class="panel">
+          <h2>записи</h2>
           <div class="filters">
             <select id="eventFilter">
-              <option value="">все мероприятия</option>
+              <option value="">все</option>
             </select>
-            <input id="search" placeholder="поиск по фио, группе, проекту" />
+            <input id="search" placeholder="поиск" />
             <div class="filters-row">
-              <button class="btn ghost" id="searchBtn" type="button">найти</button>
-              <button class="btn" id="exportBtn" type="button">скачать txt</button>
+              <button class="btn" id="searchBtn" type="button">найти</button>
+              <button class="btn green" id="exportBtn" type="button">txt</button>
             </div>
           </div>
           <div id="regs"></div>
         </div>
 
-        <footer class="footer" style="padding-left: 0; padding-right: 0">
+        <div class="footer">
           <a href="/">на сайт</a> ·
           <a href="#" id="logout">выйти</a>
-        </footer>
+        </div>
       </div>
-    </main>
-
+    </div>
     <script src="/app.js"></script>
     <script>
       loadAdmin();
