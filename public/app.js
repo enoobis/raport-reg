@@ -239,13 +239,10 @@ function loadAdmin() {
     box.innerHTML =
       '<div class="table-wrap"><table class="data-table">' +
       "<thead><tr>" +
-      "<th>название</th><th>до</th><th>статус</th><th>действия</th>" +
+      "<th>название</th><th>до</th><th>действия</th>" +
       "</tr></thead><tbody>" +
       events
         .map((e) => {
-          const st = e.archived
-            ? '<span class="tag arch">архив</span>'
-            : '<span class="tag">открыто</span>';
           return (
             "<tr>" +
             '<td class="td-strong">' +
@@ -253,9 +250,6 @@ function loadAdmin() {
             "</td>" +
             "<td>" +
             esc(fmt(e.endsAt)) +
-            "</td>" +
-            "<td>" +
-            st +
             "</td>" +
             '<td><div class="row-actions">' +
             '<button class="btn" data-edit="' +
