@@ -83,28 +83,42 @@ async function api(url, opts) {
 
 async function loadHome() {
   const box = qs("#list");
-  try {
-    const events = await api("/api/events");
-    if (!events.length) {
-      box.innerHTML =
-        '<div class="empty">пока нет открытых регистраций</div>';
-      return;
+  let lastKey = "";
+
+  async function renderHome() {
+    try {
+      const events = await api("/api/events");
+      const key = events
+        .map((e) => e.id + ":" + e.endsAt + ":" + (e.archived ? 1 : 0))
+        .join("|");
+      if (key === lastKey) return;
+      lastKey = key;
+
+      if (!events.length) {
+        box.innerHTML =
+          '<div class="empty">пока нет открытых регистраций</div>';
+        return;
+      }
+      box.innerHTML = events
+        .map(
+          (e) =>
+            '<a class="event" href="/register.html?id=' +
+            encodeURIComponent(e.id) +
+            '"><span class="event-title">' +
+            esc(e.title) +
+            '</span><span class="event-meta">регистрация до: ' +
+            esc(fmt(e.endsAt)) +
+            '</span><span class="event-go">открыть форму →</span></a>'
+        )
+        .join("");
+    } catch (e) {
+      box.innerHTML = '<div class="empty">' + esc(e.message) + "</div>";
+      lastKey = "";
     }
-    box.innerHTML = events
-      .map(
-        (e) =>
-          '<a class="event" href="/register.html?id=' +
-          encodeURIComponent(e.id) +
-          '"><span class="event-title">' +
-          esc(e.title) +
-          '</span><span class="event-meta">регистрация до: ' +
-          esc(fmt(e.endsAt)) +
-          '</span><span class="event-go">открыть форму →</span></a>'
-      )
-      .join("");
-  } catch (e) {
-    box.innerHTML = '<div class="empty">' + esc(e.message) + "</div>";
   }
+
+  await renderHome();
+  setInterval(renderHome, 3000);
 }
 
 async function loadRegister() {
@@ -167,6 +181,7 @@ function loadAdmin() {
     loginBox.style.display = "none";
     desk.style.display = "block";
     await refresh();
+    startAutoRefresh();
   }
 
   async function tryLogin(p) {
@@ -223,11 +238,34 @@ function loadAdmin() {
     qs("#title").focus();
   }
 
+  let refreshBusy = false;
+  let autoTimer = null;
+
   async function refresh() {
-    eventsCache = await api("/api/panel/events", { headers: headers() });
-    renderEvents(eventsCache);
-    fillFilter(eventsCache);
-    await loadRegs();
+    if (refreshBusy) return;
+    refreshBusy = true;
+    try {
+      const selected = qs("#eventFilter").value;
+      const search = qs("#search").value;
+      eventsCache = await api("/api/panel/events", { headers: headers() });
+      renderEvents(eventsCache);
+      fillFilter(eventsCache);
+      if (selected) qs("#eventFilter").value = selected;
+      qs("#search").value = search;
+      await loadRegs();
+    } finally {
+      refreshBusy = false;
+    }
+  }
+
+  function startAutoRefresh() {
+    if (autoTimer) return;
+    autoTimer = setInterval(() => {
+      if (desk.style.display === "none") return;
+      // не сбивать форму редактирования
+      if (qs("#editId").value) return;
+      refresh().catch(() => {});
+    }, 3000);
   }
 
   function renderEvents(events) {
