@@ -23,7 +23,14 @@ const TZ = "Asia/Bishkek";
 
 function fmt(iso) {
   try {
-    return new Date(iso).toLocaleString("ru-RU", { timeZone: TZ });
+    return new Date(iso).toLocaleString("ru-RU", {
+      timeZone: TZ,
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   } catch (e) {
     return iso;
   }
@@ -353,13 +360,13 @@ function loadAdmin() {
             "<td>" +
             esc(r.group) +
             "</td>" +
-            '<td class="td-nowrap">' +
+            "<td>" +
             esc(r.phone) +
             "</td>" +
             "<td>" +
             esc(r.projectTitle) +
             "</td>" +
-            '<td class="td-nowrap">' +
+            '<td class="td-date">' +
             esc(fmt(r.at)) +
             "</td>" +
             "</tr>" +
