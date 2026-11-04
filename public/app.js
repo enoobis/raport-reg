@@ -88,9 +88,9 @@ async function loadHome() {
         (e) =>
           '<a class="btn" href="/register.html?id=' +
           encodeURIComponent(e.id) +
-          '">' +
+          '"><span>' +
           esc(e.title) +
-          "<br><small>до " +
+          "</span><small>до " +
           esc(fmt(e.endsAt)) +
           "</small></a>"
       )
