@@ -319,59 +319,79 @@ textarea:focus {
   font-weight: 600;
 }
 
-.cards {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.item-card {
-  padding: 16px;
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
   border: 2px solid var(--line);
   border-radius: 12px;
-  background: var(--soft);
+  background: #fff;
 }
 
-.item-top {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  margin-bottom: 10px;
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 18px;
 }
 
-.item-title {
-  font-size: 22px;
+.data-table th,
+.data-table td {
+  padding: 14px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--line);
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+}
+
+.data-table th {
+  position: sticky;
+  top: 0;
+  background: var(--navy);
+  color: #fff;
+  font-size: 16px;
   font-weight: 700;
-  line-height: 1.25;
+}
+
+.data-table tbody tr:nth-child(4n + 1),
+.data-table tbody tr:nth-child(4n + 2) {
+  background: #fff;
+}
+
+.data-table tbody tr:nth-child(4n + 3),
+.data-table tbody tr:nth-child(4n + 4) {
+  background: #f5f8fc;
+}
+
+.data-table .td-strong {
+  font-weight: 700;
   color: var(--text);
-  word-break: break-word;
 }
 
-.field {
-  display: grid;
-  gap: 4px;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px solid var(--line);
+.data-table .td-nowrap {
+  white-space: nowrap;
+  overflow-wrap: normal;
 }
 
-.field:first-of-type {
-  margin-top: 4px;
+.data-table .desc-row td {
+  border-bottom: 2px solid var(--line);
+  background: inherit;
+  padding-top: 0;
+  padding-bottom: 16px;
 }
 
-.field-label {
-  font-size: 15px;
+.desc-label {
+  font-size: 14px;
   font-weight: 700;
   color: var(--muted);
+  margin-bottom: 4px;
 }
 
-.field-value {
-  font-size: 20px;
+.desc-text {
+  font-size: 18px;
   font-weight: 600;
+  line-height: 1.45;
   color: var(--text);
-  line-height: 1.4;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -392,17 +412,15 @@ textarea:focus {
 }
 
 .row-actions {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .row-actions .btn {
-  width: 100%;
-  min-height: 48px;
-  padding: 10px 12px;
-  font-size: 17px;
+  min-height: 44px;
+  padding: 8px 12px;
+  font-size: 16px;
 }
 
 .footer {
@@ -444,7 +462,16 @@ textarea:focus {
     padding: 18px;
   }
 
+  .data-table {
+    font-size: 16px;
+    min-width: 680px;
+  }
+
   .row-actions {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .row-actions .btn {
+    width: 100%;
   }
 }

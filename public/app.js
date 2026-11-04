@@ -230,24 +230,27 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      '<div class="cards">' +
+      '<div class="table-wrap"><table class="data-table">' +
+      "<thead><tr>" +
+      "<th>название</th><th>до</th><th>статус</th><th>действия</th>" +
+      "</tr></thead><tbody>" +
       events
         .map((e) => {
           const st = e.archived
             ? '<span class="tag arch">архив</span>'
             : '<span class="tag">открыто</span>';
           return (
-            '<div class="item-card">' +
-            '<div class="item-top">' +
-            '<div class="item-title">' +
+            "<tr>" +
+            '<td class="td-strong">' +
             esc(e.title) +
-            "</div>" +
-            st +
-            "</div>" +
-            '<div class="field"><span class="field-label">регистрация до</span><span class="field-value">' +
+            "</td>" +
+            "<td>" +
             esc(fmt(e.endsAt)) +
-            "</span></div>" +
-            '<div class="row-actions">' +
+            "</td>" +
+            "<td>" +
+            st +
+            "</td>" +
+            '<td><div class="row-actions">' +
             '<button class="btn" data-edit="' +
             esc(e.id) +
             '" type="button">изменить</button>' +
@@ -258,11 +261,11 @@ function loadAdmin() {
               : '<button class="btn red" data-arch="' +
                 esc(e.id) +
                 '" type="button">в архив</button>') +
-            "</div></div>"
+            "</div></td></tr>"
           );
         })
         .join("") +
-      "</div>";
+      "</tbody></table></div>";
 
     box.querySelectorAll("[data-edit]").forEach((b) => {
       b.onclick = () => {
@@ -336,33 +339,38 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      '<div class="cards">' +
+      '<div class="table-wrap"><table class="data-table">' +
+      "<thead><tr>" +
+      "<th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>когда</th>" +
+      "</tr></thead><tbody>" +
       regs
         .map(
           (r) =>
-            '<div class="item-card">' +
-            '<div class="item-title">' +
+            "<tr>" +
+            '<td class="td-strong">' +
             esc(r.fio) +
-            "</div>" +
-            '<div class="field"><span class="field-label">группа</span><span class="field-value">' +
+            "</td>" +
+            "<td>" +
             esc(r.group) +
-            "</span></div>" +
-            '<div class="field"><span class="field-label">телефон</span><span class="field-value">' +
+            "</td>" +
+            '<td class="td-nowrap">' +
             esc(r.phone) +
-            "</span></div>" +
-            '<div class="field"><span class="field-label">проект</span><span class="field-value">' +
+            "</td>" +
+            "<td>" +
             esc(r.projectTitle) +
-            "</span></div>" +
-            '<div class="field"><span class="field-label">описание</span><span class="field-value">' +
-            esc(r.projectDesc) +
-            "</span></div>" +
-            '<div class="field"><span class="field-label">когда</span><span class="field-value">' +
+            "</td>" +
+            '<td class="td-nowrap">' +
             esc(fmt(r.at)) +
-            "</span></div>" +
-            "</div>"
+            "</td>" +
+            "</tr>" +
+            '<tr class="desc-row"><td colspan="5">' +
+            '<div class="desc-label">описание</div>' +
+            '<div class="desc-text">' +
+            esc(r.projectDesc) +
+            "</div></td></tr>"
         )
         .join("") +
-      "</div>";
+      "</tbody></table></div>";
   }
 
   qs("#createBtn").onclick = async () => {
