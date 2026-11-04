@@ -8,20 +8,20 @@
   </head>
   <body>
     <div class="wrap">
-      <div class="brand">
+      <header class="brand">
         <img src="/logo.jpg" alt="it лицей 99" />
         <div class="brand-text">
           <strong>it лицей 99</strong>
-          <span>панель</span>
+          <span>панель управления</span>
         </div>
-      </div>
+      </header>
 
-      <div class="banner">
+      <section class="banner">
         <h1>панель</h1>
-        <div class="sub">мероприятия, заявки и выгрузка списка</div>
-      </div>
+        <p class="sub">мероприятия и заявки</p>
+      </section>
 
-      <div class="panel" id="loginBox">
+      <section class="panel" id="loginBox">
         <h2>вход</h2>
         <div class="row">
           <label for="pass">пароль</label>
@@ -29,10 +29,10 @@
         </div>
         <button class="btn" id="loginBtn" type="button">войти</button>
         <div id="loginMsg"></div>
-      </div>
+      </section>
 
       <div id="desk" style="display: none">
-        <div class="panel">
+        <section class="panel">
           <h2 id="formHeading">новое мероприятие</h2>
           <input type="hidden" id="editId" value="" />
           <div class="row">
@@ -50,14 +50,14 @@
             </button>
           </div>
           <div id="createMsg"></div>
-        </div>
+        </section>
 
-        <div class="panel">
+        <section class="panel">
           <h2>мероприятия</h2>
           <div id="events"></div>
-        </div>
+        </section>
 
-        <div class="panel">
+        <section class="panel">
           <h2>записи</h2>
           <div class="top">
             <select id="eventFilter">
@@ -68,12 +68,12 @@
             <button class="btn" id="exportBtn" type="button">txt</button>
           </div>
           <div id="regs"></div>
-        </div>
+        </section>
 
-        <div class="footer">
+        <footer class="footer">
           <a href="/">на сайт</a> ·
           <a href="#" id="logout">выйти</a>
-        </div>
+        </footer>
       </div>
     </div>
     <script src="/app.js"></script>

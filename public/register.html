@@ -8,20 +8,19 @@
   </head>
   <body>
     <div class="wrap">
-      <div class="brand">
+      <header class="brand">
         <img src="/logo.jpg" alt="it лицей 99" />
         <div class="brand-text">
           <strong>it лицей 99</strong>
           <span>при президенте кр</span>
         </div>
-      </div>
+      </header>
 
-      <div class="banner">
+      <section class="banner">
         <h1>запись на рапорт</h1>
-        <div class="sub">заполни все поля — заявка уйдёт сразу в список</div>
-      </div>
+      </section>
 
-      <div class="panel">
+      <section class="panel">
         <h2 id="title">загрузка...</h2>
         <p class="muted" id="until"></p>
 
@@ -35,7 +34,7 @@
             <input id="group" name="group" required maxlength="40" />
           </div>
           <div class="row">
-            <label for="phone">номер телефона *</label>
+            <label for="phone">телефон *</label>
             <input
               id="phone"
               name="phone"
@@ -53,13 +52,13 @@
             <label for="projectDesc">описание проекта *</label>
             <textarea id="projectDesc" name="projectDesc" required maxlength="2000" rows="4"></textarea>
           </div>
-          <div class="top" style="margin-top: 12px">
-            <button class="btn" type="submit">зарегистрироваться</button>
+          <div class="top" style="margin-top: 8px">
+            <button class="btn" type="submit">отправить</button>
             <a class="btn ghost" href="/">назад</a>
           </div>
         </form>
         <div id="msg"></div>
-      </div>
+      </section>
     </div>
     <script src="/app.js"></script>
     <script>
