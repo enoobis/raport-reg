@@ -230,20 +230,24 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      '<div class="table-scroll"><table><tr><th>название</th><th>до</th><th>статус</th><th></th></tr>' +
+      '<div class="cards">' +
       events
         .map((e) => {
           const st = e.archived
             ? '<span class="tag arch">архив</span>'
             : '<span class="tag">открыто</span>';
           return (
-            "<tr><td>" +
+            '<div class="item-card">' +
+            '<div class="item-top">' +
+            '<div class="item-title">' +
             esc(e.title) +
-            "</td><td>" +
-            esc(fmt(e.endsAt)) +
-            "</td><td>" +
+            "</div>" +
             st +
-            '</td><td><div class="row-actions">' +
+            "</div>" +
+            '<div class="field"><span class="field-label">регистрация до</span><span class="field-value">' +
+            esc(fmt(e.endsAt)) +
+            "</span></div>" +
+            '<div class="row-actions">' +
             '<button class="btn" data-edit="' +
             esc(e.id) +
             '" type="button">изменить</button>' +
@@ -254,11 +258,11 @@ function loadAdmin() {
               : '<button class="btn red" data-arch="' +
                 esc(e.id) +
                 '" type="button">в архив</button>') +
-            "</div></td></tr>"
+            "</div></div>"
           );
         })
         .join("") +
-      "</table></div>";
+      "</div>";
 
     box.querySelectorAll("[data-edit]").forEach((b) => {
       b.onclick = () => {
@@ -332,26 +336,33 @@ function loadAdmin() {
       return;
     }
     box.innerHTML =
-      '<div class="table-scroll"><table><tr><th>фио</th><th>группа</th><th>телефон</th><th>проект</th><th>описание</th><th>когда</th></tr>' +
+      '<div class="cards">' +
       regs
         .map(
           (r) =>
-            "<tr><td>" +
+            '<div class="item-card">' +
+            '<div class="item-title">' +
             esc(r.fio) +
-            "</td><td>" +
+            "</div>" +
+            '<div class="field"><span class="field-label">группа</span><span class="field-value">' +
             esc(r.group) +
-            "</td><td>" +
+            "</span></div>" +
+            '<div class="field"><span class="field-label">телефон</span><span class="field-value">' +
             esc(r.phone) +
-            "</td><td>" +
+            "</span></div>" +
+            '<div class="field"><span class="field-label">проект</span><span class="field-value">' +
             esc(r.projectTitle) +
-            "</td><td>" +
+            "</span></div>" +
+            '<div class="field"><span class="field-label">описание</span><span class="field-value">' +
             esc(r.projectDesc) +
-            "</td><td>" +
+            "</span></div>" +
+            '<div class="field"><span class="field-label">когда</span><span class="field-value">' +
             esc(fmt(r.at)) +
-            "</td></tr>"
+            "</span></div>" +
+            "</div>"
         )
         .join("") +
-      "</table></div>";
+      "</div>";
   }
 
   qs("#createBtn").onclick = async () => {

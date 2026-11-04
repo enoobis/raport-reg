@@ -319,36 +319,61 @@ textarea:focus {
   font-weight: 600;
 }
 
-.table-scroll {
-  overflow-x: auto;
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.item-card {
+  padding: 16px;
   border: 2px solid var(--line);
   border-radius: 12px;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  background: #fff;
-  font-size: 17px;
-}
-
-th,
-td {
-  padding: 12px;
-  border-bottom: 1px solid var(--line);
-  text-align: left;
-  vertical-align: top;
-}
-
-th {
   background: var(--soft);
-  color: var(--navy);
+}
+
+.item-top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.item-title {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  word-break: break-word;
+}
+
+.field {
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.field:first-of-type {
+  margin-top: 4px;
+}
+
+.field-label {
   font-size: 15px;
   font-weight: 700;
+  color: var(--muted);
 }
 
-tr:last-child td {
-  border-bottom: none;
+.field-value {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .tag {
@@ -367,15 +392,17 @@ tr:last-child td {
 }
 
 .row-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
 }
 
 .row-actions .btn {
-  min-height: 44px;
-  padding: 8px 12px;
-  font-size: 16px;
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  font-size: 17px;
 }
 
 .footer {
@@ -417,7 +444,7 @@ tr:last-child td {
     padding: 18px;
   }
 
-  table {
-    min-width: 640px;
+  .row-actions {
+    grid-template-columns: 1fr;
   }
 }
