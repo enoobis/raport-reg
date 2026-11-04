@@ -86,13 +86,13 @@ async function loadHome() {
     box.innerHTML = events
       .map(
         (e) =>
-          '<a class="btn" href="/register.html?id=' +
+          '<a class="event" href="/register.html?id=' +
           encodeURIComponent(e.id) +
-          '"><span>' +
+          '"><span class="event-title">' +
           esc(e.title) +
-          "</span><small>до " +
+          '</span><span class="event-meta">регистрация до: ' +
           esc(fmt(e.endsAt)) +
-          "</small></a>"
+          '</span><span class="event-go">открыть форму →</span></a>'
       )
       .join("");
   } catch (e) {
@@ -243,10 +243,10 @@ function loadAdmin() {
             esc(fmt(e.endsAt)) +
             "</td><td>" +
             st +
-            "</td><td>" +
+            '</td><td><div class="row-actions">' +
             '<button class="btn" data-edit="' +
             esc(e.id) +
-            '" type="button">изменить</button> ' +
+            '" type="button">изменить</button>' +
             (e.archived
               ? '<button class="btn green" data-unarch="' +
                 esc(e.id) +
@@ -254,7 +254,7 @@ function loadAdmin() {
               : '<button class="btn red" data-arch="' +
                 esc(e.id) +
                 '" type="button">в архив</button>') +
-            "</td></tr>"
+            "</div></td></tr>"
           );
         })
         .join("") +

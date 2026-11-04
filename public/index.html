@@ -7,31 +7,32 @@
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <div class="wrap">
-      <header class="brand">
+    <header class="site-header">
+      <div class="inner">
         <img src="/logo.jpg" alt="it лицей 99" />
-        <div class="brand-text">
+        <div>
           <strong>it лицей 99</strong>
           <span>при президенте кр</span>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <section class="banner">
-        <h1>регистрация на рапорт</h1>
-        <p class="sub">нажмите на мероприятие и заполните форму</p>
-      </section>
+    <main class="wrap">
+      <div class="card">
+        <h1 class="page-title">регистрация на рапорт</h1>
+        <p class="page-lead">1. выберите мероприятие<br />2. заполните форму</p>
 
-      <section class="panel">
-        <h2>открытые регистрации</h2>
+        <h2 class="section-title">открытые мероприятия</h2>
         <div id="list" class="list"></div>
-      </section>
+      </div>
+    </main>
 
-      <footer class="footer">
-        <a href="/panel.html">панель</a>
-        ·
-        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener">backdoor</a>
-      </footer>
-    </div>
+    <footer class="footer">
+      <a href="/panel.html">панель</a>
+      ·
+      <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" target="_blank" rel="noopener">backdoor</a>
+    </footer>
+
     <script src="/app.js"></script>
     <script>
       loadHome();

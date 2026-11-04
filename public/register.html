@@ -7,21 +7,20 @@
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
-    <div class="wrap">
-      <header class="brand">
+    <header class="site-header">
+      <div class="inner">
         <img src="/logo.jpg" alt="it лицей 99" />
-        <div class="brand-text">
+        <div>
           <strong>it лицей 99</strong>
           <span>при президенте кр</span>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <section class="banner">
-        <h1>запись на рапорт</h1>
-      </section>
-
-      <section class="panel">
-        <h2 id="title">загрузка...</h2>
+    <main class="wrap">
+      <div class="card">
+        <h1 class="page-title">запись на рапорт</h1>
+        <h2 class="section-title" id="title">загрузка...</h2>
         <p class="muted" id="until"></p>
 
         <form id="form">
@@ -52,14 +51,16 @@
             <label for="projectDesc">описание проекта *</label>
             <textarea id="projectDesc" name="projectDesc" required maxlength="2000" rows="4"></textarea>
           </div>
-          <div class="top" style="margin-top: 8px">
+
+          <div class="actions">
             <button class="btn" type="submit">отправить заявку</button>
             <a class="btn ghost" href="/">назад</a>
           </div>
         </form>
         <div id="msg"></div>
-      </section>
-    </div>
+      </div>
+    </main>
+
     <script src="/app.js"></script>
     <script>
       loadRegister();
